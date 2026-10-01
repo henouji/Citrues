@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:gh-pages": "ng build --base-href ./ && node -e \"const fs=require('fs'), path=require('path'), dir=fs.existsSync('dist/citrues/browser')?'dist/citrues/browser':'dist/citrues'; fs.copyFileSync(path.join(dir, 'index.html'), path.join(dir, '404.html')); console.log('Copied index.html to 404.html for GitHub Pages SPA routing');\"",
     "test": "ng test"
   },
   "private": true,
