@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:gh-pages": "ng build --base-href ./ && node -e \"const fs=require('fs'), path=require('path'), dir=fs.existsSync('dist/citrues/browser')?'dist/citrues/browser':'dist/citrues'; fs.copyFileSync(path.join(dir, 'index.html'), path.join(dir, '404.html')); console.log('Copied index.html to 404.html for GitHub Pages SPA routing');\"",
+    "build:gh-pages": "ng build --base-href ./ && node -e \"const fs=require('fs'), path=require('path'), dir=fs.existsSync('dist/citrues/browser')?'dist/citrues/browser':'dist/citrues'; fs.copyFileSync(path.join(dir, 'index.html'), path.join(dir, '404.html')); fs.writeFileSync(path.join(dir, '.nojekyll'), ''); console.log('Copied index.html to 404.html and created .nojekyll for GitHub Pages');\"",
+    "deploy": "npm run build:gh-pages && npx gh-pages -d dist/citrues/browser --dotfiles",
     "test": "ng test"
   },
   "private": true,
@@ -28,6 +29,7 @@
     "@angular/compiler-cli": "^19.1.0",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^22.0.0",
+    "gh-pages": "^6.3.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
