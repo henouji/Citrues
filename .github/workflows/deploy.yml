@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "master", "update-angular-orange-vector-site-5027592671758165022"]
   workflow_dispatch:
 
 permissions:
