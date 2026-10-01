@@ -1,28 +1,60 @@
-<div class="site-container">
+<div class="site-container" [class.dark-theme]="isDarkMode" [class.lemonized]="isLemonized" [style.--ripeness-hue]="(ripeness - 100) * 0.9 + 'deg'">
+
+  <!-- Juice-o-meter Progress Bar -->
+  <div class="juice-progress-container" aria-label="Juice scroll progress bar">
+    <div class="juice-progress-bar" [style.width.%]="scrollProgress"></div>
+    <span class="juice-progress-glass">🥤 {{ scrollProgress.toFixed(0) }}% Pulpy</span>
+  </div>
 
   <!-- Header / Navigation -->
   <header class="header">
-    <div class="logo-group" (click)="scrollToSection('hero')">
-      <svg class="logo-svg" viewBox="0 0 40 40" width="36" height="36">
+    <div class="logo-group" (click)="onLogoClick($event)" title="Click 5 times for Orange Rain!">
+      <svg class="logo-svg living-orange" viewBox="0 0 40 40" width="38" height="38">
         <defs>
           <radialGradient id="logoGrad" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stop-color="#FFB74D" />
-            <stop offset="60%" stop-color="#FF7800" />
-            <stop offset="100%" stop-color="#E65100" />
+            <stop offset="0%" [attr.stop-color]="isLemonized ? '#FFEE58' : '#FFB74D'" />
+            <stop offset="60%" [attr.stop-color]="isLemonized ? '#FBC02D' : '#FF7800'" />
+            <stop offset="100%" [attr.stop-color]="isLemonized ? '#F57F17' : '#E65100'" />
           </radialGradient>
         </defs>
         <circle cx="20" cy="22" r="16" fill="url(#logoGrad)" />
+        <!-- Face eyes -->
+        <circle cx="15" cy="20" r="2" fill="#111" />
+        <circle cx="25" cy="20" r="2" fill="#111" />
+        <path d="M 16 26 Q 20 29, 24 26" stroke="#111" stroke-width="1.5" fill="none" />
         <path d="M 20 6 C 18 2, 26 2, 25 8 Z" fill="#2E7D32" />
         <path d="M 12 8 C 8 3, 20 4, 18 8 Z" fill="#4CAF50" />
-        <circle cx="16" cy="18" r="1.5" fill="#FFF" opacity="0.4" />
       </svg>
-      <span class="logo-text">Citrues<span class="logo-badge">SVG</span></span>
+      <span class="logo-text">Citrues<span class="logo-badge">{{ isLemonized ? 'LEMON' : 'SVG' }}</span></span>
+    </div>
+
+    <!-- Micro-UI Header Controls -->
+    <div class="header-tools">
+      <!-- Seed Collector Counter -->
+      <div class="seed-counter-badge" title="Find hidden golden seeds on the page!">
+        🌱 Seeds Found: {{ seedsFoundCount }}/{{ totalSeedsCount }}
+      </div>
+
+      <!-- Sound Mute Toggle -->
+      <button class="icon-btn" (click)="toggleSound()" [title]="isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'" aria-label="Toggle Sound">
+        {{ isMuted ? '🔇' : '🔊' }}
+      </button>
+
+      <!-- Day Grove / Night Orchard Theme Toggle -->
+      <button class="icon-btn" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Day Grove' : 'Switch to Night Orchard'" aria-label="Toggle Theme">
+        {{ isDarkMode ? '🌙 Night Orchard' : '☀️ Day Grove' }}
+      </button>
+
+      <!-- Fact or Fake Popup Button -->
+      <button class="btn btn-sm btn-fact" (click)="openFactModal()">
+        🍊 Fact or Fake?
+      </button>
     </div>
 
     <nav class="nav-links">
       <button [class.active]="activeTab === 'hero'" (click)="scrollToSection('hero')">Home</button>
-      <button [class.active]="activeTab === 'vectors'" (click)="scrollToSection('vectors')">Vector Showcase</button>
-      <button [class.active]="activeTab === 'varieties'" (click)="scrollToSection('varieties')">Orange Varieties</button>
+      <button [class.active]="activeTab === 'vectors'" (click)="scrollToSection('vectors')">Pulp Gallery</button>
+      <button [class.active]="activeTab === 'varieties'" (click)="scrollToSection('varieties')">Main Squeezes</button>
       <button [class.active]="activeTab === 'customizer'" (click)="scrollToSection('customizer')">Vector Studio</button>
       <button [class.active]="activeTab === 'nutrition'" (click)="scrollToSection('nutrition')">Nutrition</button>
     </nav>
@@ -31,108 +63,80 @@
   <!-- Hero Section -->
   <section id="hero" class="hero-section">
     <div class="hero-content">
-      <div class="hero-badge">Pure Vector Citrus Artwork</div>
-      <h1 class="hero-title">Experience the Vibrant World of <span class="text-gradient">Oranges</span></h1>
+      <div class="hero-badge">100% Pure Vector Citrus Artwork</div>
+      <h1 class="hero-title">Squeeze the Day with <span class="text-gradient">{{ isLemonized ? 'Lemons' : 'Oranges' }}</span></h1>
       <p class="hero-subtitle">
-        Discover the art, varieties, and nutrition of nature's favorite citrus fruit through handcrafted scalable vector illustrations and interactive visuals.
+        Welcome to the quirkier side of citrus! Explore living scalable vector art, meet our pulp personalities, and customize your dream slice.
       </p>
+
+      <!-- Ripeness Slider Micro-UI -->
+      <div class="ripeness-bar-box">
+        <div class="label-with-val">
+          <label>🍊 Ripeness Level:</label>
+          <span class="ripeness-val">{{ ripeness < 30 ? 'Unripe Green' : (ripeness < 70 ? 'Sun-Kissed' : 'Peak Ripe!') }}</span>
+        </div>
+        <input type="range" min="0" max="100" [(ngModel)]="ripeness" class="range-slider ripeness-slider" aria-label="Ripeness level slider">
+      </div>
+
       <div class="hero-actions">
         <button class="btn btn-primary" (click)="scrollToSection('vectors')">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" />
-            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
-          </svg>
-          Explore Vector Art
+          ⚡ Explore Pulp Gallery
         </button>
         <button class="btn btn-secondary" (click)="scrollToSection('customizer')">
-          Interactive Vector Studio
+          🎨 Vector Studio
         </button>
       </div>
     </div>
 
     <!-- Floating Hero Vector Illustration -->
     <div class="hero-visual">
-      <div class="vector-hero-card">
-        <svg viewBox="0 0 400 380" class="hero-svg">
+      <!-- Hidden Seed 1 -->
+      <button *ngIf="!foundSeedsMap[1]" class="hidden-seed seed-1" (click)="collectSeed(1)" title="You found a hidden golden seed!">✨🌱</button>
+
+      <div class="vector-hero-card" (click)="triggerSquirt($event)">
+        <svg viewBox="0 0 400 380" class="hero-svg living-orange squish-on-hover">
           <defs>
-            <!-- Shadow Filter -->
             <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#D84315" flood-opacity="0.25" />
             </filter>
-
-            <!-- Whole Orange Gradient -->
             <radialGradient id="heroOrangeGrad" cx="30%" cy="30%" r="70%">
-              <stop offset="0%" stop-color="#FFC107" />
-              <stop offset="40%" stop-color="#FF8F00" />
-              <stop offset="85%" stop-color="#E65100" />
-              <stop offset="100%" stop-color="#BF360C" />
+              <stop offset="0%" [attr.stop-color]="isLemonized ? '#FFF59D' : '#FFC107'" />
+              <stop offset="40%" [attr.stop-color]="isLemonized ? '#FBC02D' : '#FF8F00'" />
+              <stop offset="85%" [attr.stop-color]="isLemonized ? '#F57F17' : '#E65100'" />
+              <stop offset="100%" [attr.stop-color]="isLemonized ? '#E65100' : '#BF360C'" />
             </radialGradient>
-
-            <!-- Slice Outer Rind -->
             <linearGradient id="rindGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FFA000" />
-              <stop offset="100%" stop-color="#D84315" />
+              <stop offset="0%" [attr.stop-color]="isLemonized ? '#FFEE58' : '#FFA000'" />
+              <stop offset="100%" [attr.stop-color]="isLemonized ? '#F57F17' : '#D84315'" />
             </linearGradient>
-
-            <!-- Leaf Gradient -->
             <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#66BB6A" />
               <stop offset="50%" stop-color="#2E7D32" />
               <stop offset="100%" stop-color="#1B5E20" />
             </linearGradient>
-
-            <!-- Glass Juice Gradient -->
-            <linearGradient id="juiceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#FFB74D" opacity="0.9" />
-              <stop offset="100%" stop-color="#F57C00" opacity="0.95" />
-            </linearGradient>
           </defs>
 
-          <!-- Back Splash Circle -->
           <circle cx="200" cy="190" r="140" fill="#FFE0B2" opacity="0.4" />
 
           <!-- Whole Orange Back -->
           <g filter="url(#softShadow)" class="floating-slow">
             <circle cx="150" cy="170" r="90" fill="url(#heroOrangeGrad)" />
-            <!-- Glossy Highlight -->
+            <!-- Face -->
+            <circle cx="125" cy="160" r="3" fill="#111" />
+            <circle cx="155" cy="160" r="3" fill="#111" />
+            <path d="M 132 178 Q 140 186, 148 178" stroke="#111" stroke-width="2" fill="none" />
             <path d="M 90 130 A 75 75 0 0 1 170 95 A 65 65 0 0 0 100 150 Z" fill="#FFFFFF" opacity="0.35" />
-            <!-- Texture Dots -->
-            <circle cx="120" cy="180" r="1.5" fill="#D84315" opacity="0.3" />
-            <circle cx="135" cy="200" r="2" fill="#D84315" opacity="0.3" />
-            <circle cx="180" cy="190" r="1.5" fill="#D84315" opacity="0.3" />
-            <circle cx="160" cy="220" r="2" fill="#D84315" opacity="0.3" />
 
-            <!-- Stem & Leaves -->
             <path d="M 148 80 C 145 68, 155 60, 150 50" stroke="#4E342E" stroke-width="4" stroke-linecap="round" fill="none" />
             <path d="M 150 75 Q 190 50, 210 75 Q 180 90, 150 75 Z" fill="url(#leafGrad)" />
-            <path d="M 150 75 Q 180 62, 210 75" stroke="#81C784" stroke-width="1.5" fill="none" />
-            <path d="M 150 75 Q 110 40, 90 60 Q 120 80, 150 75 Z" fill="url(#leafGrad)" />
           </g>
 
           <!-- Front Sliced Orange Half -->
           <g filter="url(#softShadow)" class="floating-medium" transform="translate(160, 150)">
-            <!-- Outer Rind Ring -->
             <circle cx="100" cy="100" r="85" fill="url(#rindGrad)" />
-            <!-- Pith White Ring -->
             <circle cx="100" cy="100" r="77" fill="#FFF9E6" />
-            <!-- Inner Segment Pulp Base -->
-            <circle cx="100" cy="100" r="70" fill="#FF8F00" />
+            <circle cx="100" cy="100" r="70" [attr.fill]="isLemonized ? '#FBC02D' : '#FF8F00'" />
 
-            <!-- Pulp Segments -->
-            <g>
-              <path d="M 100 100 L 102 34 A 66 66 0 0 1 142 46 Z" fill="#FFA726" />
-              <path d="M 100 100 L 142 46 A 66 66 0 0 1 164 82 Z" fill="#FF9800" />
-              <path d="M 100 100 L 164 82 A 66 66 0 0 1 160 126 Z" fill="#FFA726" />
-              <path d="M 100 100 L 160 126 A 66 66 0 0 1 130 158 Z" fill="#FF8F00" />
-              <path d="M 100 100 L 130 158 A 66 66 0 0 1 88 165 Z" fill="#FFA726" />
-              <path d="M 100 100 L 88 165 A 66 66 0 0 1 48 144 Z" fill="#FF9800" />
-              <path d="M 100 100 L 48 144 A 66 66 0 0 1 36 104 Z" fill="#FFA726" />
-              <path d="M 100 100 L 36 104 A 66 66 0 0 1 50 64 Z" fill="#FF8F00" />
-              <path d="M 100 100 L 50 64 A 66 66 0 0 1 86 36 Z" fill="#FFA726" />
-              <path d="M 100 100 L 86 36 A 66 66 0 0 1 102 34 Z" fill="#FF9800" />
-            </g>
-
-            <!-- White Pith Membrane Star Lines -->
             <g stroke="#FFF9E6" stroke-width="2.5" stroke-linecap="round">
               <line x1="100" y1="100" x2="102" y2="34" />
               <line x1="100" y1="100" x2="142" y2="46" />
@@ -145,221 +149,88 @@
               <line x1="100" y1="100" x2="50" y2="64" />
               <line x1="100" y1="100" x2="86" y2="36" />
             </g>
-
-            <!-- Central White Core -->
             <circle cx="100" cy="100" r="10" fill="#FFF9E6" />
-            <!-- Inner Slice Gloss Rim -->
-            <circle cx="100" cy="100" r="70" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4" />
-          </g>
-
-          <!-- Floating Leaves -->
-          <g class="floating-fast">
-            <path d="M 60 280 Q 90 260, 100 290 Q 70 310, 60 280 Z" fill="url(#leafGrad)" />
-            <path d="M 330 110 Q 360 80, 350 120 Q 310 130, 330 110 Z" fill="url(#leafGrad)" />
           </g>
         </svg>
       </div>
     </div>
   </section>
 
-  <!-- Vector Showcase Gallery -->
+  <!-- Vector Showcase Gallery with Peel-to-Reveal Interaction -->
   <section id="vectors" class="section">
     <div class="section-header">
-      <span class="section-tag">Vector Gallery</span>
-      <h2 class="section-title">Handcrafted Vector Orange Assets</h2>
-      <p class="section-desc">Crisp, scalable vector graphics built with clean geometric paths, gradients, and natural textures.</p>
+      <span class="section-tag">Pulp Fiction Gallery</span>
+      <h2 class="section-title">Meet Our Vector Personalities</h2>
+      <p class="section-desc">Click any card to <strong>peel it open</strong> and reveal file metadata, color palettes, and vitamin levels!</p>
     </div>
 
     <div class="vector-grid">
 
-      <!-- Card 1: Whole Orange -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <defs>
-              <radialGradient id="woGrad" cx="35%" cy="35%" r="65%">
-                <stop offset="0%" stop-color="#FFCA28" />
-                <stop offset="50%" stop-color="#FF8F00" />
-                <stop offset="100%" stop-color="#E65100" />
-              </radialGradient>
-            </defs>
-            <circle cx="100" cy="110" r="70" fill="url(#woGrad)" />
-            <path d="M 50 75 A 60 60 0 0 1 120 48 A 50 50 0 0 0 58 90 Z" fill="#FFF" opacity="0.35" />
-            <!-- Stem & Leaf -->
-            <path d="M 100 40 Q 98 25, 105 20" stroke="#3E2723" stroke-width="3.5" fill="none" stroke-linecap="round" />
-            <path d="M 100 38 Q 130 18, 145 38 Q 120 50, 100 38 Z" fill="#2E7D32" />
-            <path d="M 100 38 Q 122 28, 145 38" stroke="#81C784" stroke-width="1" fill="none" />
-            <!-- Texture -->
-            <circle cx="80" cy="120" r="1.5" fill="#BF360C" opacity="0.3" />
-            <circle cx="110" cy="140" r="1.5" fill="#BF360C" opacity="0.3" />
-            <circle cx="130" cy="110" r="1.5" fill="#BF360C" opacity="0.3" />
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Whole Sphere Orange</h3>
-          <p>Full-bodied orange with natural light curvature, glossy highlight arc, and stem leaf.</p>
-          <div class="vector-tags">
-            <span class="tag">3D Radial Gradient</span>
-            <span class="tag">Surface Stippling</span>
-          </div>
-        </div>
-      </div>
+      <div *ngFor="let asset of vectorAssets; let idx = index"
+           class="vector-card peel-card"
+           [class.is-peeled]="asset.peeled"
+           (click)="togglePeel(asset)">
 
-      <!-- Card 2: Sliced Cross Section -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <circle cx="100" cy="100" r="75" fill="#FF6D00" />
-            <circle cx="100" cy="100" r="67" fill="#FFF8E1" />
-            <circle cx="100" cy="100" r="61" fill="#FFA000" />
-            <!-- Segments -->
-            <g stroke="#FFF8E1" stroke-width="2.5">
-              <path d="M 100 100 L 100 40 A 60 60 0 0 1 142 58 Z" fill="#FFB300" />
-              <path d="M 100 100 L 142 58 A 60 60 0 0 1 160 100 Z" fill="#FFA000" />
-              <path d="M 100 100 L 160 100 A 60 60 0 0 1 142 142 Z" fill="#FFB300" />
-              <path d="M 100 100 L 142 142 A 60 60 0 0 1 100 160 Z" fill="#FFA000" />
-              <path d="M 100 100 L 100 160 A 60 60 0 0 1 58 142 Z" fill="#FFB300" />
-              <path d="M 100 100 L 58 142 A 60 60 0 0 1 40 100 Z" fill="#FFA000" />
-              <path d="M 100 100 L 40 100 A 60 60 0 0 1 58 58 Z" fill="#FFB300" />
-              <path d="M 100 100 L 58 58 A 60 60 0 0 1 100 40 Z" fill="#FFA000" />
-            </g>
-            <circle cx="100" cy="100" r="8" fill="#FFF8E1" />
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Cross Section Slice</h3>
-          <p>8-wedge pulp structure complete with central white core, pith boundaries, and translucent sheen.</p>
-          <div class="vector-tags">
-            <span class="tag">Pulp Segments</span>
-            <span class="tag">Symmetrical Path</span>
+        <!-- Front of Card -->
+        <div class="peel-front">
+          <div class="vector-card-preview" (click)="$event.stopPropagation(); triggerSquirt($event)">
+            <svg viewBox="0 0 200 200" class="card-svg living-orange">
+              <circle cx="100" cy="100" r="75" [attr.fill]="isLemonized ? '#FFEE58' : asset.palette[0]" />
+              <circle cx="100" cy="100" r="67" fill="#FFF8E1" />
+              <circle cx="100" cy="100" r="61" [attr.fill]="isLemonized ? '#FBC02D' : asset.palette[1] || '#FFA000'" />
+              <!-- Face -->
+              <circle cx="85" cy="90" r="2.5" fill="#111" />
+              <circle cx="115" cy="90" r="2.5" fill="#111" />
+              <path d="M 90 110 Q 100 118, 110 110" stroke="#111" stroke-width="2" fill="none" />
+            </svg>
           </div>
-        </div>
-      </div>
 
-      <!-- Card 3: Blood Orange Cross Section -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <defs>
-              <radialGradient id="bloodPulp" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#B71C1C" />
-                <stop offset="70%" stop-color="#D32F2F" />
-                <stop offset="100%" stop-color="#FF5722" />
-              </radialGradient>
-            </defs>
-            <circle cx="100" cy="100" r="75" fill="#D84315" />
-            <circle cx="100" cy="100" r="67" fill="#FFE0B2" />
-            <circle cx="100" cy="100" r="61" fill="url(#bloodPulp)" />
-            <g stroke="#FFE0B2" stroke-width="2">
-              <line x1="100" y1="100" x2="100" y2="40" />
-              <line x1="100" y1="100" x2="142" y2="58" />
-              <line x1="100" y1="100" x2="160" y2="100" />
-              <line x1="100" y1="100" x2="142" y2="142" />
-              <line x1="100" y1="100" x2="100" y2="160" />
-              <line x1="100" y1="100" x2="58" y2="142" />
-              <line x1="100" y1="100" x2="40" y2="100" />
-              <line x1="100" y1="100" x2="58" y2="58" />
-            </g>
-            <circle cx="100" cy="100" r="7" fill="#FFE0B2" />
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Blood Orange Crimson Slice</h3>
-          <p>Rich anthocyanin ruby tones with dark maroon pulp gradient and contrasting ivory pith.</p>
-          <div class="vector-tags">
-            <span class="tag">Ruby Gradient</span>
-            <span class="tag">Specialty Citrus</span>
+          <div class="vector-card-body">
+            <h3>{{ asset.characterName }}</h3>
+            <span class="asset-title-badge">{{ asset.name }}</span>
+            <p class="backstory"><em>"{{ asset.backstory }}"</em></p>
+            <p class="description">{{ asset.description }}</p>
+            <button class="btn btn-sm btn-peel">
+              🍊 Peel for Details
+            </button>
           </div>
         </div>
-      </div>
 
-      <!-- Card 4: Fresh Orange Juice Glass -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <defs>
-              <linearGradient id="juiceGlass" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#FFB74D" />
-                <stop offset="100%" stop-color="#F57C00" />
-              </linearGradient>
-            </defs>
-            <!-- Straw -->
-            <path d="M 115 20 L 135 60 L 105 160" stroke="#E91E63" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            <!-- Glass Body -->
-            <polygon points="60,60 140,60 128,170 72,170" fill="rgba(255,255,255,0.2)" stroke="#E0E0E0" stroke-width="2" />
-            <!-- Juice Content -->
-            <polygon points="63,80 137,80 126,166 74,166" fill="url(#juiceGlass)" />
-            <!-- Ice Cubes -->
-            <rect x="80" y="95" width="22" height="22" rx="4" fill="#FFF" opacity="0.6" transform="rotate(12 91 106)" />
-            <rect x="100" y="120" width="20" height="20" rx="4" fill="#FFF" opacity="0.6" transform="rotate(-8 110 130)" />
-            <!-- Garnish Orange Slice on Rim -->
-            <path d="M 50 60 A 25 25 0 0 1 70 35 L 60 60 Z" fill="#FF9800" stroke="#FFF" stroke-width="1.5" />
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Fresh Juice Glass & Straw</h3>
-          <p>Vector tumbler filled with freshly squeezed orange juice, floating ice cubes, and rim garnish.</p>
-          <div class="vector-tags">
-            <span class="tag">Beverage Vector</span>
-            <span class="tag">Transparency</span>
-          </div>
-        </div>
-      </div>
+        <!-- Back of Card (Peeled State) -->
+        <div class="peel-back">
+          <div class="peeled-content">
+            <h3>{{ asset.characterName }} Profile</h3>
+            <p><strong>Format:</strong> {{ asset.format }}</p>
+            <p><strong>Canvas:</strong> {{ asset.dimensions }}</p>
 
-      <!-- Card 5: Orange Blossom & Branch -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <!-- Stem -->
-            <path d="M 30 150 C 70 120, 110 100, 170 50" stroke="#4E342E" stroke-width="5" fill="none" stroke-linecap="round" />
-            <!-- Leaves -->
-            <path d="M 80 115 Q 60 80, 100 85 Q 100 115, 80 115 Z" fill="#2E7D32" />
-            <path d="M 120 85 Q 150 60, 140 95 Q 115 100, 120 85 Z" fill="#388E3C" />
-            <!-- Blossom Petals -->
-            <g transform="translate(100, 100)">
-              <ellipse cx="0" cy="-14" rx="6" ry="12" fill="#FFF" />
-              <ellipse cx="14" cy="0" rx="12" ry="6" fill="#FFF" />
-              <ellipse cx="0" cy="14" rx="6" ry="12" fill="#FFF" />
-              <ellipse cx="-14" cy="0" rx="12" ry="6" fill="#FFF" />
-              <circle cx="0" cy="0" r="5" fill="#FFD54F" />
-            </g>
-            <!-- Small Unripe Orange -->
-            <circle cx="150" cy="65" r="16" fill="#7CB342" />
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Orange Blossom & Branch</h3>
-          <p>Fragrant white citrus blossom with golden stamens, dark green leaves, and budding fruit.</p>
-          <div class="vector-tags">
-            <span class="tag">Botanical Vector</span>
-            <span class="tag">Floral Art</span>
-          </div>
-        </div>
-      </div>
+            <div class="color-palette-bar">
+              <label>Color Palette:</label>
+              <div class="palette-swatches">
+                <span *ngFor="let color of asset.palette" class="swatch" [style.background-color]="color" [title]="color"></span>
+              </div>
+            </div>
 
-      <!-- Card 6: Crescent Orange Wedge -->
-      <div class="vector-card">
-        <div class="vector-card-preview">
-          <svg viewBox="0 0 200 200" class="card-svg">
-            <g transform="translate(30,20) rotate(15)">
-              <path d="M 30 110 A 80 80 0 0 1 150 110 L 90 110 Z" fill="#E65100" />
-              <path d="M 36 106 A 72 72 0 0 1 144 106 L 90 106 Z" fill="#FFF8E1" />
-              <path d="M 42 102 A 64 64 0 0 1 138 102 L 90 102 Z" fill="#FFA000" />
-              <!-- Wedge Lines -->
-              <line x1="90" y1="102" x2="65" y2="55" stroke="#FFF8E1" stroke-width="2" />
-              <line x1="90" y1="102" x2="115" y2="55" stroke="#FFF8E1" stroke-width="2" />
-              <line x1="90" y1="102" x2="90" y2="38" stroke="#FFF8E1" stroke-width="2" />
-            </g>
-          </svg>
-        </div>
-        <div class="vector-card-body">
-          <h3>Crescent Orange Wedge</h3>
-          <p>Classic snack slice wedge illustrating curved outer rind contour and triple pulp compartment.</p>
-          <div class="vector-tags">
-            <span class="tag">Wedge Geometry</span>
-            <span class="tag">Snack Vector</span>
+            <div class="vitamin-stat-box">
+              <label>Vitamin C Density:</label>
+              <div class="stat-bar-outer">
+                <div class="stat-bar-inner" [style.width.%]="asset.vitaminCLevel"></div>
+              </div>
+              <span class="stat-num">{{ asset.vitaminCLevel }}% Potency</span>
+            </div>
+
+            <div class="peeled-actions">
+              <button class="btn btn-sm btn-primary" (click)="$event.stopPropagation(); downloadSvg(asset)">
+                📥 Download SVG
+              </button>
+              <button class="btn btn-sm btn-outline" (click)="$event.stopPropagation(); togglePeel(asset)">
+                ↩ Unpeel
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- Hidden Seed in Card -->
+        <button *ngIf="idx === 2 && !foundSeedsMap[2]" class="hidden-seed seed-in-card" (click)="$event.stopPropagation(); collectSeed(2)">🌱</button>
       </div>
 
     </div>
@@ -368,16 +239,15 @@
   <!-- Interactive Vector Studio / Customizer -->
   <section id="customizer" class="section studio-section">
     <div class="section-header">
-      <span class="section-tag">Interactive Tool</span>
-      <h2 class="section-title">Vector Orange Studio</h2>
-      <p class="section-desc">Customize vector parameters in real-time. Adjust colors, pulp segment density, scale, and animation!</p>
+      <span class="section-tag">Squeeze Studio</span>
+      <h2 class="section-title">Build Your Dream Slice</h2>
+      <p class="section-desc">Customize vector parameters in real-time. Adjust colors, segment count, scale, and spin!</p>
     </div>
 
     <div class="studio-container">
 
-      <!-- Studio Preview Canvas -->
-      <div class="studio-preview-box">
-        <div class="svg-preview-wrapper" [class.rotating-animation]="isRotating" [style.transform]="'scale(' + scaleFactor + ')'">
+      <div class="studio-preview-box" (click)="triggerSquirt($event)">
+        <div class="svg-preview-wrapper living-orange" [class.rotating-animation]="isRotating" [style.transform]="'scale(' + scaleFactor + ')'">
           <svg viewBox="0 0 200 200" width="280" height="280">
             <defs>
               <radialGradient id="customPulpGrad" cx="50%" cy="50%" r="50%">
@@ -409,6 +279,11 @@
               </ng-container>
             </g>
 
+            <!-- Face -->
+            <circle cx="85" cy="85" r="3" fill="#111" />
+            <circle cx="115" cy="85" r="3" fill="#111" />
+            <path d="M 90 115 Q 100 125, 110 115" stroke="#111" stroke-width="2" fill="none" />
+
             <!-- Center Core -->
             <circle cx="100" cy="100" r="12" [attr.fill]="customPithColor" />
 
@@ -432,11 +307,9 @@
         </div>
       </div>
 
-      <!-- Studio Controls Box -->
       <div class="studio-controls-box">
         <h3>Vector Parameters</h3>
 
-        <!-- Preset Color Picker -->
         <div class="control-group">
           <label>Citrus Color Preset</label>
           <div class="color-presets">
@@ -448,7 +321,6 @@
           </div>
         </div>
 
-        <!-- Custom Color Inputs -->
         <div class="control-group dual-input">
           <div>
             <label>Pulp Color</label>
@@ -460,7 +332,6 @@
           </div>
         </div>
 
-        <!-- Segment Count Slider -->
         <div class="control-group">
           <div class="label-with-val">
             <label>Segment Count</label>
@@ -469,7 +340,6 @@
           <input type="range" min="6" max="16" [(ngModel)]="customSegmentsCount" class="range-slider">
         </div>
 
-        <!-- Scale Slider -->
         <div class="control-group">
           <div class="label-with-val">
             <label>Vector Scale</label>
@@ -478,7 +348,6 @@
           <input type="range" min="0.7" max="1.3" step="0.1" [(ngModel)]="scaleFactor" class="range-slider">
         </div>
 
-        <!-- Toggles -->
         <div class="control-group toggle-group">
           <label class="toggle-item">
             <input type="checkbox" [(ngModel)]="showLeaf">
@@ -490,7 +359,7 @@
           </label>
           <label class="toggle-item">
             <input type="checkbox" [checked]="isRotating" (change)="toggleRotation()">
-            <span>Rotate Animation</span>
+            <span>Spin Animation</span>
           </label>
         </div>
 
@@ -502,11 +371,10 @@
   <!-- Orange Varieties Showcase Section -->
   <section id="varieties" class="section">
     <div class="section-header">
-      <span class="section-tag">Varieties & Cultivars</span>
-      <h2 class="section-title">Explore Popular Orange Varieties</h2>
+      <span class="section-tag">Main Squeezes</span>
+      <h2 class="section-title">Explore Cultivars & Personalities</h2>
       <p class="section-desc">From sweet seedless navels to complex berry-flavored blood oranges, discover citrus diversity.</p>
 
-      <!-- Category Filter Tabs -->
       <div class="filter-tabs">
         <button [class.active]="selectedCategory === 'all'" (click)="setCategory('all')">All Varieties</button>
         <button [class.active]="selectedCategory === 'sweet'" (click)="setCategory('sweet')">Sweet & Eating</button>
@@ -515,34 +383,26 @@
       </div>
     </div>
 
-    <!-- Varieties Grid -->
     <div class="varieties-grid">
-      <div *ngFor="let variety of filteredVarieties" class="variety-card">
+      <div *ngFor="let variety of filteredVarieties; let vIdx = index" class="variety-card tilt-card">
         <div class="variety-card-header" [style.background]="'linear-gradient(135deg, ' + variety.colorCode + ', ' + variety.secondaryColor + ')'">
-          <!-- Vector Icon for Variety -->
-          <svg viewBox="0 0 100 100" width="70" height="70" class="variety-icon">
+          <svg viewBox="0 0 100 100" width="70" height="70" class="variety-icon living-orange">
             <circle cx="50" cy="50" r="38" fill="#FFF" opacity="0.25" />
             <circle cx="50" cy="50" r="32" fill="#FFF" />
             <circle cx="50" cy="50" r="28" [attr.fill]="variety.colorCode" />
-            <!-- Inner Slice Detail -->
-            <g stroke="#FFF" stroke-width="1.5">
-              <line x1="50" y1="50" x2="50" y2="22" />
-              <line x1="50" y1="50" x2="74" y2="36" />
-              <line x1="50" y1="50" x2="74" y2="64" />
-              <line x1="50" y1="50" x2="50" y2="78" />
-              <line x1="50" y1="50" x2="26" y2="64" />
-              <line x1="50" y1="50" x2="26" y2="36" />
-            </g>
+            <circle cx="43" cy="45" r="2" fill="#111" />
+            <circle cx="57" cy="45" r="2" fill="#111" />
+            <path d="M 45 56 Q 50 60, 55 56" stroke="#111" stroke-width="1.5" fill="none" />
           </svg>
           <span class="category-badge">{{ variety.category | titlecase }}</span>
         </div>
 
         <div class="variety-card-content">
-          <h3>{{ variety.name }}</h3>
-          <span class="scientific-name">{{ variety.scientificName }}</span>
+          <h3>{{ variety.characterName }}</h3>
+          <span class="scientific-name">{{ variety.name }} ({{ variety.scientificName }})</span>
+          <p class="backstory"><em>"{{ variety.backstory }}"</em></p>
           <p class="description">{{ variety.description }}</p>
 
-          <!-- Flavor Ratings -->
           <div class="rating-group">
             <div class="rating-item">
               <span class="rating-label">Sweetness</span>
@@ -558,20 +418,13 @@
             </div>
           </div>
 
-          <!-- Key Features -->
-          <ul class="features-list">
-            <li *ngFor="let feature of variety.keyFeatures">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2E7D32" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              {{ feature }}
-            </li>
-          </ul>
-
           <button class="btn btn-outline" (click)="openVarietyModal(variety)">
-            View Complete Profile
+            🔍 Complete Profile
           </button>
         </div>
+
+        <!-- Hidden Seed 3 -->
+        <button *ngIf="vIdx === 1 && !foundSeedsMap[3]" class="hidden-seed seed-in-variety" (click)="collectSeed(3)">🌱</button>
       </div>
     </div>
   </section>
@@ -585,7 +438,6 @@
     </div>
 
     <div class="nutrition-grid">
-
       <div class="nutrition-card">
         <div class="nutrition-icon">
           <svg viewBox="0 0 60 60" width="50" height="50">
@@ -595,7 +447,7 @@
         </div>
         <div class="nutrition-value">92%</div>
         <div class="nutrition-label">Daily Vitamin C</div>
-        <p>A single medium orange satisfies over 90% of your recommended daily Vitamin C intake, boosting immunity.</p>
+        <p>A single medium orange satisfies over 90% of your recommended daily Vitamin C intake.</p>
       </div>
 
       <div class="nutrition-card">
@@ -633,8 +485,10 @@
         <div class="nutrition-label">Low Calorie</div>
         <p>Naturally sweet energy snack with zero fat, zero sodium, and a low glycemic load.</p>
       </div>
-
     </div>
+
+    <!-- Hidden Seed 4 -->
+    <button *ngIf="!foundSeedsMap[4]" class="hidden-seed seed-in-nutrition" (click)="collectSeed(4)">🌱</button>
   </section>
 
   <!-- Variety Detail Modal -->
@@ -643,11 +497,12 @@
       <button class="modal-close" (click)="closeModal()">&times;</button>
 
       <div class="modal-header" [style.background]="'linear-gradient(135deg, ' + selectedVarietyModal.colorCode + ', ' + selectedVarietyModal.secondaryColor + ')'">
-        <h2>{{ selectedVarietyModal.name }}</h2>
-        <span class="modal-subtitle">{{ selectedVarietyModal.scientificName }}</span>
+        <h2>{{ selectedVarietyModal.characterName }}</h2>
+        <span class="modal-subtitle">{{ selectedVarietyModal.name }} ({{ selectedVarietyModal.scientificName }})</span>
       </div>
 
       <div class="modal-body">
+        <p class="backstory"><em>"{{ selectedVarietyModal.backstory }}"</em></p>
         <p class="modal-desc">{{ selectedVarietyModal.description }}</p>
 
         <div class="modal-details-grid">
@@ -668,31 +523,63 @@
             <span class="detail-val">{{ selectedVarietyModal.category | titlecase }}</span>
           </div>
         </div>
-
-        <h4>Key Characteristics</h4>
-        <ul class="features-list">
-          <li *ngFor="let feature of selectedVarietyModal.keyFeatures">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2E7D32" stroke-width="2.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            {{ feature }}
-          </li>
-        </ul>
       </div>
     </div>
+  </div>
+
+  <!-- Fact or Fake Modal -->
+  <div *ngIf="showFactModal && currentFact" class="modal-backdrop" (click)="closeFactModal()">
+    <div class="modal-dialog fact-modal-dialog" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeFactModal()">&times;</button>
+
+      <div class="modal-header" style="background: linear-gradient(135deg, #FF9800, #E65100);">
+        <h2>🍊 Orange Fact or Fake?</h2>
+      </div>
+
+      <div class="modal-body text-center">
+        <p class="fact-prompt">"{{ currentFact.text }}"</p>
+
+        <div *ngIf="!factUserAnswered" class="fact-actions">
+          <button class="btn btn-primary" (click)="answerFact(true)">Real Fact!</button>
+          <button class="btn btn-secondary" (click)="answerFact(false)">Fake Myth!</button>
+        </div>
+
+        <div *ngIf="factUserAnswered" class="fact-result-box">
+          <h3 [class.text-success]="factUserResult" [class.text-danger]="!factUserResult">
+            {{ factUserResult ? '🎉 Correct!' : '❌ Ops! Incorrect!' }}
+          </h3>
+          <p>{{ currentFact.explanation }}</p>
+          <button class="btn btn-outline" (click)="openFactModal()">Try Another Fact!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orange Rain Overlay -->
+  <div *ngIf="isRainingOranges" class="orange-rain-overlay">
+    <div *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11,12]" class="falling-orange-item" [style.left.%]="item * 8">🍊</div>
+  </div>
+
+  <!-- Full-screen Juice Fill Overlay (triggered by typing "juice") -->
+  <div *ngIf="isJuiceFilling" class="juice-fill-overlay">
+    <div class="juice-wave"></div>
+    <div class="juice-text">🧃 JUICE OVERFLOW ACTIVATED! 🍊</div>
   </div>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <svg viewBox="0 0 40 40" width="30" height="30">
+        <svg viewBox="0 0 40 40" width="30" height="30" class="living-orange">
           <circle cx="20" cy="20" r="16" fill="#FF7800" />
           <path d="M 20 4 C 18 0, 26 0, 25 6 Z" fill="#2E7D32" />
         </svg>
         <span>Citrues Vector App</span>
       </div>
       <p>&copy; Built with Angular 19 &amp; Scalable Vector Graphics (SVG)</p>
+
+      <!-- Hidden Seed 5 in Footer -->
+      <button *ngIf="!foundSeedsMap[5]" class="hidden-seed seed-in-footer" (click)="collectSeed(5)">🌱</button>
     </div>
   </footer>
 
